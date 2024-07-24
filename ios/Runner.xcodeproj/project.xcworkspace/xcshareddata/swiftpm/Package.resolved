@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "ryft-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RyftPay/ryft-ios",
+      "state" : {
+        "revision" : "db9de222081996c8416777ca6b23f677f0b971fa",
+        "version" : "1.4.0"
+      }
+    }
+  ],
+  "version" : 2
+}

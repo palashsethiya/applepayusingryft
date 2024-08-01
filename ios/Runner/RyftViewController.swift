@@ -13,7 +13,28 @@ import RyftUI
 //    func getCallback(strResult : String)
 //}
 
-class RyftViewController: UIViewController, RyftDropInPaymentDelegate, RyftRequiredActionDelegate, RyftApplePayComponentDelegate {
+class ApplePayComponentDelegateTester: RyftApplePayComponentDelegate {
+    func applePayPayment(finishedWith status: RyftApplePayComponent.RyftApplePayPaymentStatus) {
+        print("applePayPayment called with status: \(status)")
+        switch status {
+        case .cancelled:
+            // Handle user cancellation
+            print("Apple Pay was cancelled by the user.")
+//            self.dismissPresenter(resultStr: "Apple Pay was cancelled by the user.", paymentSessionId: nil)
+        case .error(let error, let paymentError):
+            // Handle error
+                print("Payment error occurred")
+//            self.dismissPresenter(resultStr: "Payment error occurred", paymentSessionId: nil)
+        case .success(let paymentSession):
+            // Handle successful payment
+            print("Payment was successful. Payment session: \(paymentSession)")
+//            self.dismissPresenter(resultStr: "Payment was successful. Payment session: \(paymentSession)", paymentSessionId: nil)
+            // Optionally, you can navigate to a receipt view or update the UI
+        }
+    }
+}
+
+class RyftViewController: UIViewController, RyftDropInPaymentDelegate, RyftRequiredActionDelegate {
     
     private var ryftDropIn: RyftDropInPaymentViewController?
     private var ryftApiClient: RyftApiClient?
@@ -21,6 +42,8 @@ class RyftViewController: UIViewController, RyftDropInPaymentDelegate, RyftRequi
     var paymentMethodType : String?
     var clientSecret : String?
     var subAccountId : String?
+    
+    let applePayDelegateTester = ApplePayComponentDelegateTester()
     
     //    var delegateRft : RyftProtocol?
     var result : FlutterResult?
@@ -72,7 +95,7 @@ class RyftViewController: UIViewController, RyftDropInPaymentDelegate, RyftRequi
             clientSecret: clientSecret!,
             accountId: subAccountId!,
             config: .auto(config: config),
-            delegate: self
+            delegate: applePayDelegateTester
         )
         print("Setting delegate to self")
         applePayComponent?.present { presented in
@@ -89,24 +112,24 @@ class RyftViewController: UIViewController, RyftDropInPaymentDelegate, RyftRequi
         }
     }
     
-    func applePayPayment(finishedWith status: RyftApplePayComponent.RyftApplePayPaymentStatus) {
-        print("applePayPayment called with status: \(status)")
-        switch status {
-        case .cancelled:
-            // Handle user cancellation
-            print("Apple Pay was cancelled by the user.")
-            self.dismissPresenter(resultStr: "Apple Pay was cancelled by the user.", paymentSessionId: nil)
-        case .error(let error, let paymentError):
-            // Handle error
-                print("Payment error occurred")
-            self.dismissPresenter(resultStr: "Payment error occurred", paymentSessionId: nil)
-        case .success(let paymentSession):
-            // Handle successful payment
-            print("Payment was successful. Payment session: \(paymentSession)")
-            self.dismissPresenter(resultStr: "Payment was successful. Payment session: \(paymentSession)", paymentSessionId: nil)
-            // Optionally, you can navigate to a receipt view or update the UI
-        }
-    }
+//    func applePayPayment(finishedWith status: RyftApplePayComponent.RyftApplePayPaymentStatus) {
+//        print("applePayPayment called with status: \(status)")
+//        switch status {
+//        case .cancelled:
+//            // Handle user cancellation
+//            print("Apple Pay was cancelled by the user.")
+//            self.dismissPresenter(resultStr: "Apple Pay was cancelled by the user.", paymentSessionId: nil)
+//        case .error(let error, let paymentError):
+//            // Handle error
+//                print("Payment error occurred")
+//            self.dismissPresenter(resultStr: "Payment error occurred", paymentSessionId: nil)
+//        case .success(let paymentSession):
+//            // Handle successful payment
+//            print("Payment was successful. Payment session: \(paymentSession)")
+//            self.dismissPresenter(resultStr: "Payment was successful. Payment session: \(paymentSession)", paymentSessionId: nil)
+//            // Optionally, you can navigate to a receipt view or update the UI
+//        }
+//    }
 
     private func handle3DSecure(with responseData: Data){
         do {
